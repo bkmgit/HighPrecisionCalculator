@@ -18,8 +18,8 @@ jobs:
     - run: cat /etc/os-release
     - name: install dependencies
       run: |
-       dnf -y install alsa-lib-devel ant autoconf automake bc curl gambit-c
-       dnf -y install gcc-14 git grep ImageMagick-devel java-25-openjdk-devel
+       dnf -y install alsa-lib-devel ant autoconf automake bc cmake curl gambit-c
+       dnf -y install gcc14 gcc14-c++ git grep ImageMagick-devel java-25-openjdk-devel
        dnf -y install libtool libXext-devel make mesa-libGL-devel
        dnf -y install mesa-libGLU-devel netpbm-devel patch perl-FindBin
        dnf -y install portaudio python3-sdkmanager sed tar tcl-devel texlive
@@ -55,10 +55,12 @@ jobs:
        sed -i 's|SYS_CC="gcc $SYS|SYS_CC="gcc-14 $SYS|g' targets/linux/host_linux
        sed -i 's|SYS_CXX="g++ $SYS|SYS_CXX="g++-14 $SYS|g' targets/linux/host_linux
        sed -i 's|gcc -Werror|gcc-14 -Werror|g' targets/linux/check-libraries
+    - name: Copy HighPrecisionCalculator app
+      run: cp -r HighPrecisionCalculator lambdanative/apps/
     - name: linux builds
       working-directory: lambdanative
       run: |
-       ./configure Calculator
+       ./configure HighPrecisionCalculator
        make
     - name: android builds
       working-directory: lambdanative
@@ -67,7 +69,7 @@ jobs:
        sed -i 's/python/python3/g' targets/android/check-tools
        # Make directory to avoid errors during build
        mkdir -p /home/build/.cache/lambdanative/android/support
-       ./configure Calculator android debug
+       ./configure HighPrecisionCalculator android
        make
     - uses: actions/upload-artifact@v7.0.1
       with:
